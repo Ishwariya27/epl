@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple FTR Prediction - EPL Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://i2-prod.liverpool.com/incoming/article31497044.ece/ALTERNATES/s810/0_GettyImages-1411837383.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.6em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .header p {
+            color: #ddd;
+            font-size: 1.1em;
+        }
+
+        .nav {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: rgba(255,255,255,0.1);
+            color: #f1f1f1;
+            text-decoration: none;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .form-section {
+            background: rgba(255,255,255,0.12);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.25);
+            margin-bottom: 20px;
+        }
+
+        .form-section h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f1f1f1;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 16px;
+            appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control option {
+            color: #000;
+            background-color: #f9f9f9;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px #667eea;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .result-container {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.25);
+            margin-top: 30px;
+        }
+
+        .prediction-badge {
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+        }
+
+        .home-badge { background: #28a745; color: white; box-shadow: 0 0 15px #28a745; }
+        .away-badge { background: #dc3545; color: white; box-shadow: 0 0 15px #dc3545; }
+        .draw-badge { background: #ffc107; color: #333; box-shadow: 0 0 15px #ffc107; }
+
+        .chart-container {
+            max-width: 350px;
+            margin: 20px auto;
+        }
+
+        .probabilities {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .probability-item {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .probability-value {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(255,0,0,0.2);
+            color: #ffbaba;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-bolt"></i> Quick FTR Prediction</h1>
+            <p>Predict match results with just 3 simple inputs</p>
+        </div>
+
+        <div class="nav">
+            <a href="/" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+            <a href="/detailed-ftr" class="nav-btn"><i class="fas fa-chart-bar"></i> Detailed Prediction</a>
+            <a href="/score-prediction" class="nav-btn"><i class="fas fa-crosshairs"></i> Score Prediction</a>
+        </div>
+
+        <div class="form-container">
+            <div class="form-section">
+                <h3><i class="fas fa-info-circle"></i> Match Information</h3>
+                <form id="predictionForm">
+                    <div class="form-group">
+                        <label for="home_team"><i class="fas fa-home"></i> Home Team</label>
+                        <select id="home_team" name="home_team" class="form-control" required>
+                            <option value="">Select Home Team</option>
+                            {% for team in ["Arsenal","Aston Villa","Bournemouth","Brentford","Brighton","Burnley","Chelsea","Crystal Palace","Everton","Fulham","Liverpool","Luton","Man City","Man United","Newcastle","Nottingham Forest","Sheffield United","Tottenham","West Ham","Wolves"] %}
+                            <option value="{{ team }}">{{ team }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="away_team"><i class="fas fa-plane"></i> Away Team</label>
+                        <select id="away_team" name="away_team" class="form-control" required>
+                            <option value="">Select Away Team</option>
+                            {% for team in ["Arsenal","Aston Villa","Bournemouth","Brentford","Brighton","Burnley","Chelsea","Crystal Palace","Everton","Fulham","Liverpool","Luton","Man City","Man United","Newcastle","Nottingham Forest","Sheffield United","Tottenham","West Ham","Wolves"] %}
+                            <option value="{{ team }}">{{ team }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date"><i class="fas fa-calendar"></i> Match Date</label>
+                        <input type="date" id="date" name="date" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="predictBtn">
+                        <i class="fas fa-bolt"></i> Predict Match Result
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorText"></span>
+        </div>
+
+        <div class="result-container" id="resultsContainer">
+            <div class="prediction-result">
+                <div class="prediction-badge" id="predictionBadge">
+                    <span id="predictionText"></span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="probabilityChart"></canvas>
+            </div>
+
+            <div class="probabilities">
+                <div class="probability-item">
+                    <div class="probability-value" id="homeValue">0%</div>
+                    <div>Home Win</div>
+                </div>
+                <div class="probability-item">
+                    <div class="probability-value" id="drawValue">0%</div>
+                    <div>Draw</div>
+                </div>
+                <div class="probability-item">
+                    <div class="probability-value" id="awayValue">0%</div>
+                    <div>Away Win</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="resetForm()">
+                <i class="fas fa-redo"></i> New Prediction
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let probabilityChart = null;
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('predictBtn');
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Predicting...';
+            try {
+                const res = await fetch('/predict-simple-ftr', { method: 'POST', body: new FormData(this) });
+                const data = await res.json();
+                if (data.success) displayResults(data);
+                else showError(data.error);
+            } catch (err) { showError('Network error: ' + err.message); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> Predict Match Result'; }
+        });
+
+        function displayResults(result) {
+            const badge = document.getElementById('predictionBadge');
+            const text = document.getElementById('predictionText');
+            let cls = 'draw-badge', msg = 'DRAW';
+            if (result.prediction.includes('Home')) { cls = 'home-badge'; msg = 'HOME WIN'; }
+            else if (result.prediction.includes('Away')) { cls = 'away-badge'; msg = 'AWAY WIN'; }
+            badge.className = `prediction-badge ${cls}`;
+            text.textContent = msg;
+            document.getElementById('homeValue').textContent = result.probabilities.home_win + '%';
+            document.getElementById('drawValue').textContent = result.probabilities.draw + '%';
+            document.getElementById('awayValue').textContent = result.probabilities.away_win + '%';
+            createPieChart(result.probabilities);
+            document.getElementById('resultsContainer').style.display = 'block';
+            badge.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function createPieChart(prob) {
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            if (probabilityChart) probabilityChart.destroy();
+            probabilityChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Home Win', 'Draw', 'Away Win'],
+                    datasets: [{
+                        data: [prob.home_win, prob.draw, prob.away_win],
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: { plugins: { legend: { labels: { color: '#fff' } } } }
+            });
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('predictionForm').reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
