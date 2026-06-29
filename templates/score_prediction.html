@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Prediction - EPL Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://t3.ftcdn.net/jpg/01/95/97/18/240_F_195971813_gC4pO4KoYDWxycBvrZjy3dwqzoDlM3ct.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.65);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.6em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .header p {
+            color: #ddd;
+            font-size: 1.1em;
+        }
+
+        .nav {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 5px;
+            background: rgba(255,255,255,0.1);
+            color: #f1f1f1;
+            text-decoration: none;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .form-section {
+            background: rgba(255,255,255,0.12);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.25);
+            margin-bottom: 20px;
+        }
+
+        .form-section h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px #667eea;
+        }
+
+        select option {
+            color: #000;
+            background-color: #f9f9f9;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-container {
+            display: none;
+            background: rgba(255,255,255,0.12);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 1px solid rgba(255,255,255,0.25);
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 30px 0;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .goals-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 30px 0;
+        }
+
+        .goal-item {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 120px;
+        }
+
+        .goal-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .goal-home { 
+            color: #28a745; 
+            text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+        
+        .goal-away { 
+            color: #dc3545; 
+            text-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .goal-label {
+            font-size: 1.1em;
+            color: #ddd;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(220, 53, 69, 0.2);
+            color: #ffbaba;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-crosshairs"></i> Score Prediction</h1>
+            <p>Predict the exact final score of any Premier League match</p>
+        </div>
+
+        
+
+        <div class="form-section">
+            <h3><i class="fas fa-info-circle"></i> Match Information</h3>
+            <form id="predictionForm">
+                <div class="form-group">
+                    <label for="home_team"><i class="fas fa-home"></i> Home Team</label>
+                    <select id="home_team" name="home_team" class="form-control" required>
+                        <option value="">Select Home Team</option>
+                        <option value="Arsenal">Arsenal</option>
+                        <option value="Aston Villa">Aston Villa</option>
+                        <option value="Bournemouth">Bournemouth</option>
+                        <option value="Brentford">Brentford</option>
+                        <option value="Brighton">Brighton</option>
+                        <option value="Burnley">Burnley</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="Crystal Palace">Crystal Palace</option>
+                        <option value="Everton">Everton</option>
+                        <option value="Fulham">Fulham</option>
+                        <option value="Liverpool">Liverpool</option>
+                        <option value="Luton">Luton</option>
+                        <option value="Man City">Man City</option>
+                        <option value="Man United">Man United</option>
+                        <option value="Newcastle">Newcastle</option>
+                        <option value="Nottingham Forest">Nottingham Forest</option>
+                        <option value="Sheffield United">Sheffield United</option>
+                        <option value="Tottenham">Tottenham</option>
+                        <option value="West Ham">West Ham</option>
+                        <option value="Wolves">Wolves</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="away_team"><i class="fas fa-plane"></i> Away Team</label>
+                    <select id="away_team" name="away_team" class="form-control" required>
+                        <option value="">Select Away Team</option>
+                        <option value="Arsenal">Arsenal</option>
+                        <option value="Aston Villa">Aston Villa</option>
+                        <option value="Bournemouth">Bournemouth</option>
+                        <option value="Brentford">Brentford</option>
+                        <option value="Brighton">Brighton</option>
+                        <option value="Burnley">Burnley</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="Crystal Palace">Crystal Palace</option>
+                        <option value="Everton">Everton</option>
+                        <option value="Fulham">Fulham</option>
+                        <option value="Liverpool">Liverpool</option>
+                        <option value="Luton">Luton</option>
+                        <option value="Man City">Man City</option>
+                        <option value="Man United">Man United</option>
+                        <option value="Newcastle">Newcastle</option>
+                        <option value="Nottingham Forest">Nottingham Forest</option>
+                        <option value="Sheffield United">Sheffield United</option>
+                        <option value="Tottenham">Tottenham</option>
+                        <option value="West Ham">West Ham</option>
+                        <option value="Wolves">Wolves</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date"><i class="fas fa-calendar"></i> Match Date</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn-primary" id="predictBtn">
+                    <i class="fas fa-crosshairs"></i> Predict Final Score
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p>Calculating score prediction...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorText"></span>
+        </div>
+
+        <!-- Results Section -->
+        <div class="result-container" id="resultsContainer">
+            <h2><i class="fas fa-trophy"></i> Predicted Final Score</h2>
+            
+            <div class="score-display" id="scoreDisplay">
+                0-0
+            </div>
+
+            <div class="goals-breakdown">
+                <div class="goal-item">
+                    <span class="goal-number goal-home" id="homeGoals">0</span>
+                    <span class="goal-label">Home Goals</span>
+                </div>
+                <div class="goal-item">
+                    <span class="goal-number goal-away" id="awayGoals">0</span>
+                    <span class="goal-label">Away Goals</span>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="resetForm()">
+                <i class="fas fa-redo"></i> New Prediction
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Set default date to today
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+        // Form submission - RESTORED ORIGINAL LOGIC
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const predictBtn = document.getElementById('predictBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Reset UI
+            errorMessage.style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            
+            // Show loading
+            predictBtn.disabled = true;
+            predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Predicting...';
+            loadingSpinner.style.display = 'block';
+            
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('/predict-score', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result);
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                predictBtn.disabled = false;
+                predictBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Predict Final Score';
+                loadingSpinner.style.display = 'none';
+            }
+        });
+
+        // Display results
+        function displayResults(result) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const homeGoals = document.getElementById('homeGoals');
+            const awayGoals = document.getElementById('awayGoals');
+            
+            // Update score display
+            scoreDisplay.textContent = result.prediction;
+            homeGoals.textContent = result.home_goals;
+            awayGoals.textContent = result.away_goals;
+            
+            // Show results
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            errorMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('predictionForm').reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // KEPT NEW VALIDATION FEATURE
+        document.getElementById('home_team').addEventListener('change', validateTeams);
+        document.getElementById('away_team').addEventListener('change', validateTeams);
+
+        function validateTeams() {
+            const homeTeam = document.getElementById('home_team').value;
+            const awayTeam = document.getElementById('away_team').value;
+            const predictBtn = document.getElementById('predictBtn');
+            
+            if (homeTeam && awayTeam && homeTeam === awayTeam) {
+                showError('Home and Away teams cannot be the same');
+                predictBtn.disabled = true;
+            } else if (homeTeam && awayTeam) {
+                document.getElementById('errorMessage').style.display = 'none';
+                predictBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

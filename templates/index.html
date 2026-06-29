@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Home - EPL Predictor{% endblock %}
+
+{% block content %}
+<div style="text-align: center; color: white; padding: 4rem 2rem;">
+    <h1 style="font-size: 3rem; margin-bottom: 1rem;">
+        <i class="fas fa-futbol"></i> EPL Predictor Pro
+    </h1>
+    <p style="font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.9;">
+        Advanced Premier League Match Predictions Using Machine Learning
+    </p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto;">
+        <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 15px; backdrop-filter: blur(10px);">
+            <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+            <h3>Detailed FTR Prediction</h3>
+            <p>Use advanced match statistics for precise predictions</p>
+            <a href="{{ url_for('detailed_ftr') }}" class="btn-primary" style="display: inline-block; margin-top: 1rem;">
+                Try Now
+            </a>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 15px; backdrop-filter: blur(10px);">
+            <i class="fas fa-bolt" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+            <h3>Quick FTR Prediction</h3>
+            <p>Fast predictions with minimal inputs</p>
+            <a href="{{ url_for('simple_ftr') }}" class="btn-primary" style="display: inline-block; margin-top: 1rem;">
+                Try Now
+            </a>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 15px; backdrop-filter: blur(10px);">
+            <i class="fas fa-crosshairs" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+            <h3>Score Prediction</h3>
+            <p>Predict exact match scores</p>
+            <a href="{{ url_for('score_prediction') }}" class="btn-primary" style="display: inline-block; margin-top: 1rem;">
+                Try Now
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

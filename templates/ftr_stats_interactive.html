@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPL Match Predictor ⚽</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://i2-prod.liverpool.com/incoming/article31497044.ece/ALTERNATES/s810/0_GettyImages-1411837383.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .header p {
+            color: #ddd;
+            font-size: 1.2em;
+        }
+
+        .nav {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 5px;
+            background: rgba(255,255,255,0.1);
+            color: #f1f1f1;
+            text-decoration: none;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Container */
+        .form-container {
+            background: rgba(255,255,255,0.12);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .form-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid, .stats-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-group {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-group h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control, select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px #667eea;
+        }
+
+        select option {
+            color: #000;
+            background-color: #f9f9f9;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .predict-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .predict-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Container */
+        .results-container {
+            background: rgba(255,255,255,0.12);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .results-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prediction-main {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .home-badge { 
+            background: #28a745; 
+            color: white; 
+            box-shadow: 0 0 15px #28a745; 
+        }
+        
+        .draw-badge { 
+            background: #ffc107; 
+            color: #333; 
+            box-shadow: 0 0 15px #ffc107; 
+        }
+        
+        .away-badge { 
+            background: #dc3545; 
+            color: white; 
+            box-shadow: 0 0 15px #dc3545; 
+        }
+
+        .results-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .results-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 15px;
+            height: 300px;
+        }
+
+        .probability-breakdown {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .probability-breakdown h3 {
+            margin-bottom: 20px;
+            color: #f1f1f1;
+            text-align: center;
+        }
+
+        .probability-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .prob-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .prob-label {
+            width: 120px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prob-bar-container {
+            flex: 1;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .prob-bar {
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: width 1s ease-in-out;
+            min-width: 60px;
+        }
+
+        .home-win {
+            background: linear-gradient(90deg, #28a745, #34ce57);
+        }
+
+        .draw {
+            background: linear-gradient(90deg, #ffc107, #ffd54f);
+        }
+
+        .away-win {
+            background: linear-gradient(90deg, #dc3545, #e74c3c);
+        }
+
+        .new-prediction-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .new-prediction-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Quick Tests */
+        .quick-tests {
+            background: rgba(255,255,255,0.12);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.25);
+            text-align: center;
+        }
+
+        .quick-tests h3 {
+            margin-bottom: 20px;
+            color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .test-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .test-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .home-test {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+        }
+
+        .draw-test {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .away-test {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .loading-spinner i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner p {
+            font-size: 1.2rem;
+            color: #f1f1f1;
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(255,0,0,0.2);
+            color: #ffbaba;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-futbol"></i> EPL Match Predictor</h1>
+            <p>Enter match statistics to predict the Full Time Result</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <a href="/" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+            <a href="/detailed-ftr" class="nav-btn"><i class="fas fa-chart-bar"></i> Detailed Prediction</a>
+            <a href="/score-prediction" class="nav-btn"><i class="fas fa-crosshairs"></i> Score Prediction</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Prediction Form -->
+            <div class="form-container">
+                <div class="form-card">
+                    <h2><i class="fas fa-sliders-h"></i> Match Statistics</h2>
+                    
+                    <form id="predictionForm">
+                        <!-- Match Info -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-info-circle"></i> Match Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="home_team"><i class="fas fa-home"></i> Home Team</label>
+                                    <select id="home_team" name="home_team" required>
+                                        <option value="">Select Home Team</option>
+                                        <option value="Arsenal">Arsenal</option>
+                                        <option value="Aston Villa">Aston Villa</option>
+                                        <option value="Bournemouth">Bournemouth</option>
+                                        <option value="Brentford">Brentford</option>
+                                        <option value="Brighton">Brighton</option>
+                                        <option value="Burnley">Burnley</option>
+                                        <option value="Chelsea">Chelsea</option>
+                                        <option value="Crystal Palace">Crystal Palace</option>
+                                        <option value="Everton">Everton</option>
+                                        <option value="Fulham">Fulham</option>
+                                        <option value="Liverpool">Liverpool</option>
+                                        <option value="Luton">Luton</option>
+                                        <option value="Man City">Man City</option>
+                                        <option value="Man United">Man United</option>
+                                        <option value="Newcastle">Newcastle</option>
+                                        <option value="Nottingham Forest">Nottingham Forest</option>
+                                        <option value="Sheffield United">Sheffield United</option>
+                                        <option value="Tottenham">Tottenham</option>
+                                        <option value="West Ham">West Ham</option>
+                                        <option value="Wolves">Wolves</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="away_team"><i class="fas fa-plane"></i> Away Team</label>
+                                    <select id="away_team" name="away_team" required>
+                                        <option value="">Select Away Team</option>
+                                        <option value="Arsenal">Arsenal</option>
+                                        <option value="Aston Villa">Aston Villa</option>
+                                        <option value="Bournemouth">Bournemouth</option>
+                                        <option value="Brentford">Brentford</option>
+                                        <option value="Brighton">Brighton</option>
+                                        <option value="Burnley">Burnley</option>
+                                        <option value="Chelsea">Chelsea</option>
+                                        <option value="Crystal Palace">Crystal Palace</option>
+                                        <option value="Everton">Everton</option>
+                                        <option value="Fulham">Fulham</option>
+                                        <option value="Liverpool">Liverpool</option>
+                                        <option value="Luton">Luton</option>
+                                        <option value="Man City">Man City</option>
+                                        <option value="Man United">Man United</option>
+                                        <option value="Newcastle">Newcastle</option>
+                                        <option value="Nottingham Forest">Nottingham Forest</option>
+                                        <option value="Sheffield United">Sheffield United</option>
+                                        <option value="Tottenham">Tottenham</option>
+                                        <option value="West Ham">West Ham</option>
+                                        <option value="Wolves">Wolves</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="season"><i class="fas fa-calendar"></i> Season</label>
+                                    <input type="text" id="season" name="season" value="2024-2025" required 
+                                           placeholder="YYYY-YYYY" pattern="\d{4}-\d{4}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Match Stats -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-chart-line"></i> Match Statistics</h3>
+                            <div class="stats-grid">
+                                <!-- Half Time Goals -->
+                                <div class="stat-group">
+                                    <h4>Half Time Goals</h4>
+                                    <div class="form-group">
+                                        <label for="hthg">Home (HTHG)</label>
+                                        <input type="number" id="hthg" name="hthg" min="0" max="10" value="1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="htag">Away (HTAG)</label>
+                                        <input type="number" id="htag" name="htag" min="0" max="10" value="0" required>
+                                    </div>
+                                </div>
+
+                                <!-- Shots -->
+                                <div class="stat-group">
+                                    <h4>Total Shots</h4>
+                                    <div class="form-group">
+                                        <label for="hs">Home (HS)</label>
+                                        <input type="number" id="hs" name="hs" min="0" max="50" value="15" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="as">Away (AS)</label>
+                                        <input type="number" id="as" name="as" min="0" max="50" value="8" required>
+                                    </div>
+                                </div>
+
+                                <!-- Shots on Target -->
+                                <div class="stat-group">
+                                    <h4>Shots on Target</h4>
+                                    <div class="form-group">
+                                        <label for="hst">Home (HST)</label>
+                                        <input type="number" id="hst" name="hst" min="0" max="50" value="6" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ast">Away (AST)</label>
+                                        <input type="number" id="ast" name="ast" min="0" max="50" value="3" required>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Stats -->
+                                <div class="stat-group">
+                                    <h4>Additional Statistics</h4>
+                                    <div class="form-group">
+                                        <label for="hc">Home Corners (HC)</label>
+                                        <input type="number" id="hc" name="hc" min="0" max="20" value="7" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ac">Away Corners (AC)</label>
+                                        <input type="number" id="ac" name="ac" min="0" max="20" value="3" required>
+                                    </div>
+                                </div>
+
+                                <!-- Fouls -->
+                                <div class="stat-group">
+                                    <h4>Fouls</h4>
+                                    <div class="form-group">
+                                        <label for="hf">Home Fouls (HF)</label>
+                                        <input type="number" id="hf" name="hf" min="0" max="30" value="12" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="af">Away Fouls (AF)</label>
+                                        <input type="number" id="af" name="af" min="0" max="30" value="15" required>
+                                    </div>
+                                </div>
+
+                                <!-- Cards -->
+                                <div class="stat-group">
+                                    <h4>Cards</h4>
+                                    <div class="form-group">
+                                        <label for="hy">Home Yellow Cards (HY)</label>
+                                        <input type="number" id="hy" name="hy" min="0" max="10" value="1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ay">Away Yellow Cards (AY)</label>
+                                        <input type="number" id="ay" name="ay" min="0" max="10" value="2" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="hr">Home Red Cards (HR)</label>
+                                        <input type="number" id="hr" name="hr" min="0" max="5" value="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ar">Away Red Cards (AR)</label>
+                                        <input type="number" id="ar" name="ar" min="0" max="5" value="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="predict-btn" id="predictBtn">
+                            <i class="fas fa-bolt"></i> Predict Result
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <div class="results-card">
+                    <h2><i class="fas fa-chart-pie"></i> Prediction Results</h2>
+                    
+                    <div class="prediction-main">
+                        <div class="prediction-badge" id="predictionBadge">
+                            <span id="predictionText"></span>
+                        </div>
+                    </div>
+
+                    <div class="results-content">
+                        <!-- Pie Chart -->
+                        <div class="chart-container">
+                            <canvas id="probabilityChart"></canvas>
+                        </div>
+
+                        <!-- Probability Breakdown -->
+                        <div class="probability-breakdown">
+                            <h3>Probability Breakdown</h3>
+                            <div class="probability-bars">
+                                <div class="prob-item">
+                                    <div class="prob-label">
+                                        <i class="fas fa-home"></i> Home Win
+                                    </div>
+                                    <div class="prob-bar-container">
+                                        <div class="prob-bar home-win" id="homeBar">
+                                            <span class="prob-value" id="homeValue">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="prob-item">
+                                    <div class="prob-label">
+                                        <i class="fas fa-handshake"></i> Draw
+                                    </div>
+                                    <div class="prob-bar-container">
+                                        <div class="prob-bar draw" id="drawBar">
+                                            <span class="prob-value" id="drawValue">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="prob-item">
+                                    <div class="prob-label">
+                                        <i class="fas fa-plane"></i> Away Win
+                                    </div>
+                                    <div class="prob-bar-container">
+                                        <div class="prob-bar away-win" id="awayBar">
+                                            <span class="prob-value" id="awayValue">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="new-prediction-btn" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> New Prediction
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorText"></span>
+        </div>
+
+        <!-- Quick Test Buttons -->
+        <div class="quick-tests">
+            <h3><i class="fas fa-vial"></i> Test Scenarios</h3>
+            <div class="test-buttons">
+                <button class="test-btn home-test" onclick="fillHomeWin()">
+                    <i class="fas fa-home"></i> Home Win
+                </button>
+                <button class="test-btn draw-test" onclick="fillDraw()">
+                    <i class="fas fa-handshake"></i> Draw
+                </button>
+                <button class="test-btn away-test" onclick="fillAwayWin()">
+                    <i class="fas fa-plane"></i> Away Win
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Analyzing match data...</p>
+        </div>
+    </div>
+
+    <script>
+        let probabilityChart = null;
+
+        // Form submission
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const predictBtn = document.getElementById('predictBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            // Show loading
+            errorMsg.style.display = 'none';
+            predictBtn.disabled = true;
+            predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Predicting...';
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                // Simulate API call - replace with your actual API endpoint
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Mock response - replace with actual API response
+                const mockResponse = {
+                    success: true,
+                    prediction: 'H',
+                    probabilities: {
+                        home_win: 65.2,
+                        draw: 22.1,
+                        away_win: 12.7
+                    }
+                };
+                
+                if (mockResponse.success) {
+                    displayResults(mockResponse);
+                } else {
+                    showError('Prediction failed');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                predictBtn.disabled = false;
+                predictBtn.innerHTML = '<i class="fas fa-bolt"></i> Predict Result';
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // Display results
+        function displayResults(result) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const predictionBadge = document.getElementById('predictionBadge');
+            const predictionText = document.getElementById('predictionText');
+            
+            // Update prediction badge
+            let badgeClass = '';
+            let badgeText = '';
+            let badgeIcon = '';
+            
+            if (result.prediction === 'H') {
+                badgeClass = 'home-badge';
+                badgeText = 'HOME WIN';
+                badgeIcon = '<i class="fas fa-home"></i> ';
+            } else if (result.prediction === 'A') {
+                badgeClass = 'away-badge';
+                badgeText = 'AWAY WIN';
+                badgeIcon = '<i class="fas fa-plane"></i> ';
+            } else {
+                badgeClass = 'draw-badge';
+                badgeText = 'DRAW';
+                badgeIcon = '<i class="fas fa-handshake"></i> ';
+            }
+            
+            predictionBadge.className = `prediction-badge ${badgeClass}`;
+            predictionText.innerHTML = badgeIcon + badgeText;
+            
+            // Update probability bars
+            updateProbabilityBars(result.probabilities);
+            
+            // Create pie chart
+            createPieChart(result.probabilities);
+            
+            // Show results
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update probability bars
+        function updateProbabilityBars(probabilities) {
+            const homeBar = document.getElementById('homeBar');
+            const drawBar = document.getElementById('drawBar');
+            const awayBar = document.getElementById('awayBar');
+            
+            const homeValue = document.getElementById('homeValue');
+            const drawValue = document.getElementById('drawValue');
+            const awayValue = document.getElementById('awayValue');
+            
+            homeBar.style.width = probabilities.home_win + '%';
+            drawBar.style.width = probabilities.draw + '%';
+            awayBar.style.width = probabilities.away_win + '%';
+            
+            homeValue.textContent = probabilities.home_win + '%';
+            drawValue.textContent = probabilities.draw + '%';
+            awayValue.textContent = probabilities.away_win + '%';
+        }
+
+        // Create pie chart
+        function createPieChart(probabilities) {
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (probabilityChart) {
+                probabilityChart.destroy();
+            }
+            
+            probabilityChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Home Win', 'Draw', 'Away Win'],
+                    datasets: [{
+                        data: [probabilities.home_win, probabilities.draw, probabilities.away_win],
+                        backgroundColor: [
+                            '#28a745', // Home - Green
+                            '#ffc107', // Draw - Yellow
+                            '#dc3545'  // Away - Red
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#fff',
+                                font: {
+                                    size: 14,
+                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Show error
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = msg;
+            el.style.display = 'block';
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('predictionForm').reset();
+            document.getElementById('season').value = '2024-2025';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Quick test scenarios
+        function fillHomeWin() {
+            document.getElementById('home_team').value = 'Arsenal';
+            document.getElementById('away_team').value = 'Norwich';
+            document.getElementById('season').value = '2024-2025';
+            document.getElementById('hthg').value = '2';
+            document.getElementById('htag').value = '0';
+            document.getElementById('hs').value = '18';
+            document.getElementById('as').value = '8';
+            document.getElementById('hst').value = '8';
+            document.getElementById('ast').value = '3';
+            document.getElementById('hc').value = '7';
+            document.getElementById('ac').value = '3';
+            document.getElementById('hf').value = '10';
+            document.getElementById('af').value = '15';
+            document.getElementById('hy').value = '1';
+            document.getElementById('ay').value = '3';
+            document.getElementById('hr').value = '0';
+            document.getElementById('ar').value = '0';
+        }
+
+        function fillDraw() {
+            document.getElementById('home_team').value = 'Liverpool';
+            document.getElementById('away_team').value = 'Man City';
+            document.getElementById('season').value = '2024-2025';
+            document.getElementById('hthg').value = '1';
+            document.getElementById('htag').value = '1';
+            document.getElementById('hs').value = '12';
+            document.getElementById('as').value = '11';
+            document.getElementById('hst').value = '5';
+            document.getElementById('ast').value = '4';
+            document.getElementById('hc').value = '6';
+            document.getElementById('ac').value = '5';
+            document.getElementById('hf').value = '12';
+            document.getElementById('af').value = '13';
+            document.getElementById('hy').value = '2';
+            document.getElementById('ay').value = '2';
+            document.getElementById('hr').value = '0';
+            document.getElementById('ar').value = '0';
+        }
+
+        function fillAwayWin() {
+            document.getElementById('home_team').value = 'Norwich';
+            document.getElementById('away_team').value = 'Man City';
+            document.getElementById('season').value = '2024-2025';
+            document.getElementById('hthg').value = '0';
+            document.getElementById('htag').value = '2';
+            document.getElementById('hs').value = '6';
+            document.getElementById('as').value = '20';
+            document.getElementById('hst').value = '2';
+            document.getElementById('ast').value = '9';
+            document.getElementById('hc').value = '3';
+            document.getElementById('ac').value = '8';
+            document.getElementById('hf').value = '14';
+            document.getElementById('af').value = '8';
+            document.getElementById('hy').value = '3';
+            document.getElementById('ay').value = '1';
+            document.getElementById('hr').value = '0';
+            document.getElementById('ar').value = '0';
+        }
+    </script>
+</body>
+</html>
